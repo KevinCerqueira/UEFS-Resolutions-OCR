@@ -69,11 +69,17 @@ class OCR:
         return text
 
     def extract_resolucao(self, text:str):
-        result = re.search(r'RESOLU[GC]AO CONSEPE\s*(\d{2,3}\s*/\s*\d{4})', text)
+        result = re.search(r'RESOLU[GC]AO CONSEPE\s*(\d{2,3}\s*/\s*\d{2,4})', text)
         
         if result:
             self.json["numero"] = result.group(1).replace(" ", "")
-            self.json["ano"] = int(self.json["numero"].split("/")[1])
+            self.json["ano"] = self.json["numero"].split("/")[1]
+            if(len(self.json["ano"]) == 2):
+                if(self.json["ano"][0] == "9"):
+                    self.json["ano"] = "19" + self.json["ano"]
+                elif(self.json["ano"][0] == "1" or self.json["ano"][0] == "2"):
+                    self.json["ano"] = "20" + self.json["ano"]
+            self.json["ano"] = int(self.json["ano"])
         else:
             log.error("OCR:extract_resolucao - ", f"Unable to extract numero and ano from: *** {text} ***")
 
