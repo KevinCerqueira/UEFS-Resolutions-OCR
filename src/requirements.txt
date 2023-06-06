@@ -30,4 +30,4 @@ soupsieve==2.4.1
 tqdm==4.65.0
 urllib3==2.0.2
 Wand==0.6.11
-Werkzeug==2.3.4
+Werkzeug
