@@ -8,6 +8,7 @@ from PyPDF2 import PdfReader
 from pdf2image import convert_from_path
 import pytesseract
 from datetime import datetime
+from collections import OrderedDict
 
 class OCR:
     
@@ -15,7 +16,7 @@ class OCR:
         """
         Inicializa o objeto JSON com valores padrão.
         """
-        self.json = {
+        self.json = OrderedDict({
             "numero": "",
             "ano": 0,
             "data": "",
@@ -23,7 +24,7 @@ class OCR:
             "cabecalho": "",
             "texto": "",
             "link": ""
-        }
+        })
 
     def main(self, link):
         """
