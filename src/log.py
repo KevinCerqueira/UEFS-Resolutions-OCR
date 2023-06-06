@@ -12,10 +12,11 @@ if(platform.system() not in ['Linux', 'Darwin']):
 
 # Grava mensagens no LOG do sistema (arquivo logs/log_ANO-MES-DIA.log)
 def register(level, msg):
-	with open(os.path.dirname(os.path.realpath(__file__)) + path_log + str(date.today()) + '.log', 'a', encoding='utf-8') as log_file:
-		log_file.write("[{}] {}: {} \n".format(str(datetime.now()), level, msg))
-	with open(os.path.dirname(os.path.realpath(__file__)) + path_log.replace("_", "") +'.log', 'a', encoding='utf-8') as log_file:
-		log_file.write("[{}] {}: {} \n".format(str(datetime.now()), level, msg))
+	pass
+	# with open(os.path.dirname(os.path.realpath(__file__)) + path_log + str(date.today()) + '.log', 'a', encoding='utf-8') as log_file:
+	# 	log_file.write("[{}] {}: {} \n".format(str(datetime.now()), level, msg))
+	# with open(os.path.dirname(os.path.realpath(__file__)) + path_log.replace("_", "") +'.log', 'a', encoding='utf-8') as log_file:
+	# 	log_file.write("[{}] {}: {} \n".format(str(datetime.now()), level, msg))
 
 def error(origin, msg):
 	register('ERROR', origin + ": " + msg)
