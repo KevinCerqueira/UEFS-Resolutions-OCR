@@ -1,2 +1,5 @@
 src/venv
 src/logs/*
+src/__pycache__/*
+.DS_Store
+*.pyc

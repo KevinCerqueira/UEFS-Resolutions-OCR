@@ -130,6 +130,10 @@ class OCR:
         if("/file/d/" in link_drive):
             file_id = link_drive.split("/file/d/")[1].split("/")[0]
             link = "https://drive.google.com/uc?export=download&id=" + file_id
+            
+        if not os.path.exists('tmp'):
+            os.makedirs('tmp')
+
         file_name = f'/tmp/{file_id}.pdf'
         
         log.debug("OCR:download_file - ", f"Downloading file: {f'{file_id}.pdf'} from {link}")
