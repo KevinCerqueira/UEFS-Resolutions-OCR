@@ -9,6 +9,7 @@ from pdf2image import convert_from_path
 import pytesseract
 from datetime import datetime
 from collections import OrderedDict
+import json
 
 class OCR:
     
@@ -49,7 +50,7 @@ class OCR:
         self.extract_cabecalho(text)
 
         # Registra que a extração está concluída
-        log.info("OCR:main - ", "Extração concluída, json final: " + str(self.json))
+        log.info("OCR:main - ", "Extração concluída, json final: " + json.dumps(self.json, sort_keys=False))
         os.remove(file_name)
 
         # Retorna o dicionário de metadados
@@ -57,6 +58,9 @@ class OCR:
 
 
     def extract_text(self, file_name:str) -> str:
+        """
+        Extrai todo o texto do PDF
+        """
         text = ""
         with open(file_name, 'rb') as pdf_file:
             pdf_reader = PdfReader(pdf_file)
@@ -69,6 +73,9 @@ class OCR:
         return text
 
     def extract_resolucao(self, text:str):
+        """
+        Extrai o número da resolução e o ano
+        """
         result = re.search(r'RESOLU[GC]AO CONSEPE\s*(\d{2,3}\s*/\s*\d{2,4})', text)
         
         if result:
@@ -84,6 +91,9 @@ class OCR:
             log.error("OCR:extract_resolucao - ", f"Unable to extract numero and ano from: *** {text} ***")
 
     def extract_date(self, text:str):
+        """
+        Extrai a data de quando assinado a resolução
+        """
         meses = {'janeiro': 'January', 'fevereiro': 'February', 'março': 'March',
             'marco': 'March', 'abril': 'April', 'maio': 'May', 'junho': 'June', 
             'julho': 'July', 'agosto': 'August', 'setembro': 'September', 
@@ -108,6 +118,9 @@ class OCR:
             log.error("OCR:extract_date - ", f"Unable to extract data from: *** {text} ***")
                 
     def extract_reitor(self, text:str):
+        """
+        Extrai o nome do reitor
+        """
         resultado = re.search(r'\n(.*)\n+(?:Reitor|Reitora|Reifor)\s', text, re.IGNORECASE)
         if resultado:
             self.json["reitor"] = resultado.group(1).strip().replace("16", "Jo")
@@ -118,6 +131,9 @@ class OCR:
             log.error("OCR:extract_reitor - ", f"Unable to extract reitor from: *** {text} ***")
     
     def extract_cabecalho(self, text:str):
+        """
+        Extrai somente o cabecalho da resolução
+        """
         resultado = re.search(r'RESOLU[GC]AO CONSEPE.*?\n+(.*?)\n+RESOLVE', text, re.IGNORECASE | re.DOTALL)
         if resultado:
             self.json["cabecalho"] = resultado.group(1).strip()
@@ -126,6 +142,9 @@ class OCR:
             
     
     def download_file(self, link_drive:str) -> str:
+        """
+        Baixa o arquivo PDF com base no link do drive
+        """
         link = link_drive
         if("/file/d/" in link_drive):
             file_id = link_drive.split("/file/d/")[1].split("/")[0]
@@ -140,9 +159,3 @@ class OCR:
         
         gdown.download(link, file_name, quiet=False)
         return file_name
-
-
-if __name__ == "__main__":
-    ocr = OCR()
-    link_pdf_drive = "https://drive.google.com/file/d/16o6tdwGt2Fr7n-WeTheyZ6p-sdKSIXca"
-    print(ocr.main(link_pdf_drive))
