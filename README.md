@@ -14,19 +14,19 @@ Componente Curricular: EXA844 - Programação para Redes
 
 # Documentação da API
 
-Nessa sessão iremos explicar como utilizar a API para o processamento dos PDF. Nos exemplos iremos utilizar o PDF do link `https://drive.google.com/file/d/1iCzTq0YlgFM1g3usHYvOZuU0QtZ8xyMb` e utilizarem a url padrão local da API `http://127.0.0.1:5000`
+Nessa sessão iremos explicar como utilizar a API para o processamento dos PDF. Nos exemplos iremos utilizar o PDF do link `https://drive.google.com/file/d/1iCzTq0YlgFM1g3usHYvOZuU0QtZ8xyMb` e utilizarem a url da API que está em produção `https://exa844.rj.r.appspot.com/`
 
 ### Exemplo de uso no terminal:
 
 ```sh
 # Irá retornar os dados extraídos do PDF
-curl -X POST -H "Content-Type: application/json" -d '{"link":"https://drive.google.com/file/d/1iCzTq0YlgFM1g3usHYvOZuU0QtZ8xyMb"}' http://127.0.0.1:5000
+curl -X POST -H "Content-Type: application/json" -d '{"link":"https://drive.google.com/file/d/1iCzTq0YlgFM1g3usHYvOZuU0QtZ8xyMb"}' https://exa844.rj.r.appspot.com/
 ```
 
 * `X POST`: Este parâmetro especifica que o método de requisição HTTP é POST.
 * `H` "Content-Type: application/json": Este parâmetro adiciona um cabeçalho à requisição que indica que o corpo da requisição está em formato JSON.
 * `-d '{"link":"https://drive.google.com/file/d/1iCzTq0YlgFM1g3usHYvOZuU0QtZ8xyMb"}'`: Este parâmetro especifica o corpo da requisição. No exemplo, o corpo da requisição é um objeto JSON que contém um atributo "link" com um valor de "https://drive.google.com/file/d/1iCzTq0YlgFM1g3usHYvOZuU0QtZ8xyMb" que será o PDF que o OCR irá processar.
-* `http://127.0.0.1:5000`: Esta é a URL da API para a qual a requisição POST é enviada.
+* `https://exa844.rj.r.appspot.com/`: Esta é a URL da API para a qual a requisição POST é enviada.
 
 ### Exemplo de Uso no Postman
 
@@ -36,7 +36,7 @@ curl -X POST -H "Content-Type: application/json" -d '{"link":"https://drive.goog
 4. No campo de URL (barra de endereços), insira a seguinte URL:
 
 ```sh
-http://127.0.0.1:5000
+https://exa844.rj.r.appspot.com/
 ```
 
 5. Abaixo da URL, vá para a guia "Body".
