@@ -23,5 +23,5 @@ def error(origin, msg):
 def info(origin, msg):
 	register('INFO', origin + ": " + msg)
 
-def debug(origin, msg):
+def debug(origin='', msg=''):
 	register('DEBUG', origin + ": " + msg)

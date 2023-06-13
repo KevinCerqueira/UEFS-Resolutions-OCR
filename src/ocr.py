@@ -40,10 +40,10 @@ class OCR:
         text = self.extract_text(file_name)
 
         # Adiciona o texto extraído e o link ao dicionário de metadados
-        self.json["texto"] = text
         self.json["link"] = link
 
         # Extrai metadados adicionais do texto
+        self.extract_text_resolucao(text)
         self.extract_resolucao(text)
         self.extract_date(text)
         self.extract_reitor(text)
@@ -76,20 +76,26 @@ class OCR:
         """
         Extrai o número da resolução e o ano
         """
-        result = re.search(r'RESOLU[GC]AO CONSEPE\s*(\d{2,3}\s*/\s*\d{2,4})', text)
+        result = re.search(r'RESOLU[GC]AO CONSEPE\s*N[º°]\s*(\d{2,3}\s*/\s*\d{2,4})', text)
         
-        if result:
-            self.json["numero"] = result.group(1).replace(" ", "")
-            self.json["ano"] = self.json["numero"].split("/")[1]
-            if(len(self.json["ano"]) == 2):
-                if(self.json["ano"][0] == "9"):
-                    self.json["ano"] = "19" + self.json["ano"]
-                elif(self.json["ano"][0] == "1" or self.json["ano"][0] == "2"):
-                    self.json["ano"] = "20" + self.json["ano"]
-            self.json["ano"] = int(self.json["ano"])
-        else:
-            log.error("OCR:extract_resolucao - ", f"Unable to extract numero and ano from: *** {text} ***")
-
+        try:
+            if result:
+                self.json["numero"] = result.group(1).replace(" ", "")
+                self.json["ano"] = self.json["numero"].split("/")[1]
+                if(len(self.json["ano"]) == 2):
+                    if(self.json["ano"][0] == "9"):
+                        self.json["ano"] = "19" + self.json["ano"]
+                    elif(self.json["ano"][0] == "1" or self.json["ano"][0] == "2"):
+                        self.json["ano"] = "20" + self.json["ano"]
+                self.json["ano"] = int(self.json["ano"])
+            if(self.json["numero"] == ""):
+                result = re.search(r'RESOLU[GC]AO CONSEPE\s*(\d{2,3}\s*/\s*\d{2,4})', text)
+                if result:
+                    self.json["numero"] = result.group(1).replace(" ", "")                        
+                if(self.json["numero"] == ""):
+                    raise Exception(f"SecondTry: Unable to extract numero and ano from: *** {text} ***")
+        except Exception as e:
+            log.error("OCR:extract_resolucao - ", str({e}))
     def extract_date(self, text:str):
         """
         Extrai a data de quando assinado a resolução
@@ -98,7 +104,7 @@ class OCR:
             'marco': 'March', 'abril': 'April', 'maio': 'May', 'junho': 'June', 
             'julho': 'July', 'agosto': 'August', 'setembro': 'September', 
             'outubro': 'October', 'novembro': 'November', 'dezembro': 'December'}
-         
+        
         result = re.findall(r'(\d{1,2} de [a-zç]+ de \d{4})', text, re.IGNORECASE)
         
         if result:
@@ -114,9 +120,12 @@ class OCR:
                 data_obj = datetime.strptime(f'{dia} {mes} {ano}', '%d %B %Y')
                 data_str = data_obj.strftime('%d/%m/%Y')
                 self.json["data"] = data_str
+            
+            if(self.json["ano"] == 0 and self.json["data"] != ""):
+                self.json["ano"] = int(self.json["data"].split("/")[2])
         else:
             log.error("OCR:extract_date - ", f"Unable to extract data from: *** {text} ***")
-                
+        
     def extract_reitor(self, text:str):
         """
         Extrai o nome do reitor
@@ -126,6 +135,10 @@ class OCR:
             self.json["reitor"] = resultado.group(1).strip().replace("16", "Jo")
             if("PAIM" in self.json["reitor"]):
                 self.json["reitor"] = "ANACI BISPO PAIM"
+            elif("oavista" in self.json["reitor"] or "Cunha" in self.json["reitor"]):
+                self.json["reitor"] = "José Onofre Gurjão Boavista da Cunha"
+            elif("MELLO" in self.json["reitor"] or "Cunha" in self.json["reitor"]):
+                self.json["reitor"] = "Josué da Silva Mello"
         if(self.json["reitor"] == ""):
             self.json["reitor"] = "Não identificado"
             log.error("OCR:extract_reitor - ", f"Unable to extract reitor from: *** {text} ***")
@@ -140,7 +153,18 @@ class OCR:
         else:
             log.error("OCR:extract_cabecalho - ", f"Unable to extract cabecalho from: *** {text} ***")
             
-    
+    def extract_text_resolucao(self, text:str):
+        """
+        Extrai todo o texto do PDF
+        """
+        split_text = re.split(r'RESOLVE', text, flags=re.IGNORECASE)
+
+        if len(split_text) > 1:
+            # Retorna tudo após o primeiro "RESOLUCAO" ou "RESOLUGAO", que corresponde ao segundo item da lista
+            self.json["texto"] = split_text[1].strip()
+        else:
+            self.json["texto"] = text
+        
     def download_file(self, link_drive:str) -> str:
         """
         Baixa o arquivo PDF com base no link do drive
