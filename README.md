@@ -1,6 +1,18 @@
 # Projeto de Extensão - OCR
 
-Componente Curricular: EXA844 - Programação para Redes
+Este projeto é uma implementação OCR que processa PDFs de resoluções do CONSEPE da UEFS. Inicialmente, um link de um PDF é fornecido. O PDF, que contém imagens, é então convertido em texto. O conteúdo do texto é lido e processado por meio de expressões regulares para extrair informações relevantes. O resultado é um objeto JSON com informações específicas, tais como:
+
+```sh
+{
+	"numero": "001/2016",
+	"ano": 2016,
+	"data": "08/01/2016",
+	"reitor": "Nome do reitor",
+	"cabecalho": "todo texto até a palavra resolve",
+	"texto": "todo texto da resolução",
+	"link": "Link de acesso para o pdf da resolução"
+}
+```
 
 # Autores
 
